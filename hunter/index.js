@@ -3,14 +3,13 @@ const fs = require('fs');
 
 const l = require("@connibug/js-logging");
 const config = require("./env.js").config;
-const starting_ip = config.starting_ip;
+const starting_ip = config.starting_ip.split('.').map(Number);
 const ending_ip = config.ending_ip;
 const reservedSubnets = config.reservedSubnets;
 
 let lastResolvedIP = "";
-let highestSequentialIP = starting_ip;
+let highestSequentialIP = starting_ip.join('.');
 console.log(`Starting IP: ${starting_ip}`);
-starting_ip = starting_ip.split('.').map(Number);
 
 
 // --- End Config ---
@@ -182,8 +181,6 @@ function updateStatus() {
 
 // self calling function
 (async () => {
-    await db.setup();
-
     // Loop though every residential IP addressk
     for (let i = starting_ip[0]; i <= 255; ++i) {
         // xxx.
