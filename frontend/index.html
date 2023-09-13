@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en" data-bs-theme="dark">
+
+<head>
+    <title>MC Scraper</title>
+    <meta content="Minecraft Server Hunter" property="og:title">
+    <meta content="An opensource self-hosted solution to hunting out minecraft servers to explorer <3" property="og:description">
+    <meta content="https://mcs-dev.conni.lgbt/" property="og:url">
+    <meta content="null.png" property="og:image">
+    <meta content="#ff0fed" data-react-helmet="true" name="theme-color">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+</head>
+<body>
+    <div id="root">
+
+        <div class="container-fluid" style="margin-top: 1rem;margin-left: 1rem;width: 97%;">
+
+                <div class="card" >
+                    <!-- Table 1 -->
+                    <div class="card-body" style="">
+
+                        <div class="row">
+                            <div class="col-12">
+<!--                                <h3>Table 1</h3>-->
+                            </div>
+
+                            <div class="col-5">
+                                <div class="input-group mb-4">
+                                    <span class="input-group-text" >
+                                        <i class="bi bi-search"></i>
+                                    </span>
+                                    <input id="sByHostname" type="text" class="form-control" placeholder="hostname">
+                                    <input id="sByPort" type="text" class="form-control" placeholder="port">
+                                    <input id="sByVersion" type="text" class="form-control" placeholder="version">
+                                </div>
+                            </div>
+
+                            <div class="col-2">
+                                <!--                                Min/max players-->
+                                <div class="input-group mb-3">
+                                    <span class="input-group-text">
+                                        <i class="bi bi-person"></i>
+                                    </span>
+                                    <input id="sByMinPlayers" type="text" class="form-control" placeholder="min players">
+                                    <input id="sByMaxPlayers" type="text" class="form-control" placeholder="max players">
+                                </div>
+                            </div>
+
+                            <div class="col-2">
+                                <!-- Auto refresh setter and displays time until next refresh -->
+                                <div class="input-group mb-3">
+                                    <span class="input-group-text">
+                                        <i class="bi bi-clock"></i>
+                                    </span>
+                                    <select class="form-select" id="autoRefresh">
+                                        <option value="0">Off</option>
+                                        <option value="5">5s</option>
+                                        <option value="10">10s</option>
+                                        <option value="30">30s</option>
+                                        <option value="60">1m</option>
+                                        <option value="300">5m</option>
+                                        <option value="600">10m</option>
+                                        <option value="1800">30m</option>
+                                        <option value="3600">1h</option>
+                                    </select>
+                                    <span class="input-group-text" id="autoRefreshTime">0s</span>
+                                </div>
+                            </div>
+
+                            <!-- Sort by id, most recently updated or player count-->
+                            <div class="col-3">
+                                <div class="input-group mb-3">
+                                    <select class="form-select" id="sort_type">
+                                        <option value="id">ID</option>
+                                        <option value="last_updated">Last Updated</option>
+                                        <option value="players_online">Player Count</option>
+                                    </select>
+                                    <select class="form-select" id="sort_direction">
+                                        <option value="desc" selected>Desc</option>
+                                        <option value="asc">Asc</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="table-responsive" style="height: 66vh;">
+                            <table class="table table-striped table-hover table-sm">
+                                <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Hostname</th>
+                                    <th>Players</th>
+                                    <th>Version</th>
+                                    <th>Last Updated</th>
+                                </tr>
+                                </thead>
+                                <tbody id="table1-body">
+                                <!-- Server information for Table 1 will be dynamically added here -->
+                                </tbody>
+                            </table>
+                        </div>
+<!--                            Table footer-->
+                        <div class="row" style="margin-top: 1vh;">
+                            <div class="col-12">
+                                <div class="btn-group" role="group" aria-label="Basic example">
+                                    <button id="table1-first" type="button" class="btn btn-secondary">First</button>
+                                    <button id="table1-prev" type="button" class="btn btn-secondary">Prev</button>
+                                    <button id="table1-next" type="button" class="btn btn-secondary">Next</button>
+                                    <button id="table1-last" type="button" class="btn btn-secondary">Last</button>
+<!--                                    Display page num-->
+                                    <span id="table1-pagenum" class="input-group-text">Page #1</span>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+        </div>
+    </div>
+</body>
+</html>
