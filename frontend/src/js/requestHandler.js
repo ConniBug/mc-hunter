@@ -1,3 +1,5 @@
+const config = require("./config.js");
+
 const { getFilterValues } = require("./filterHandler.js");
 const { getPageNumber } = require("./urlHandler.js");
 
@@ -6,15 +8,17 @@ const { table_populate } = require("./table_handler.js");
 // Create the request
 const request = new XMLHttpRequest();
 
-function send_request() {
+function send_request(callback = null) {
+    if(callback)
+        request.onComplete = callback;
+
     let { hostname, port, version, minPlayers, maxPlayers, sortBy, sortOrder } = getFilterValues();
     let page = getPageNumber();
 
     // Request from the server
-    const api_hostname = "localhost";
-    const api_port = 3000;
+    const api_url = config.api_url;
 
-    let api_path = `/api/ips?alive=true`;
+    let api_path = `/ips?alive=true`;
 
     let params = [
         `hostname=${hostname}`,
@@ -28,7 +32,7 @@ function send_request() {
     ];
     api_path += `&${params.join("&")}`;
 
-    request.open("GET", `http://${api_hostname}:${api_port}${api_path}`, true);
+    request.open("GET", `${api_url}${api_path}`, true);
     request.setRequestHeader("Content-Type", "application/json");
 
     // Send the request
@@ -42,9 +46,12 @@ request.onload = function () {
         let serverInfo = [];
         const data = JSON.parse(request.responseText);
         serverInfo.push(...data);
-        table_populate(serverInfo);
 
         console.log(`Loaded ${data.length} servers`);
+        if(request.onComplete) {
+            request.onComplete(serverInfo);
+            console.log("Called onComplete");
+        }
     } else {
         // We reached our target server, but it returned an error
         console.error("Error: " + request.statusText);
@@ -57,4 +64,3 @@ request.onerror = function () {
 }
 
 module.exports.send_request = send_request;
-send_request();
