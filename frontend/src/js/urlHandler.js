@@ -16,7 +16,8 @@ function getUrlVars() {
     let string = window.location.hash ? window.location.hash.substring(1) : "";
     let components = string.split("#");
     if(components.length == 1 && components[0] == "")
-        return;
+        return { hostname, port, version, minPlayers, maxPlayers, sortBy, sortOrder, page };
+
     for(let i = 0; i < components.length; ++i) {
         let comp = components[i];
         let tmp = comp.split("=");
@@ -66,8 +67,9 @@ function getUrlVars() {
 
     return { hostname, port, version, minPlayers, maxPlayers, sortBy, sortOrder, page };
 }
-function setUrlVars() {
-    let { page } = getUrlVars();
+function setUrlVars(page = null) {
+    if(page === null)
+        page = getUrlVars().page;
     let { hostname, port, version, minPlayers, maxPlayers, sortBy, sortOrder } = getFilterValues();
 
     pageNum.innerHTML = `Page #${page}`;
@@ -80,7 +82,8 @@ module.exports.getUrlVars = getUrlVars;
 module.exports.setUrlVars = setUrlVars;
 module.exports.getPageNumber = () => {
     let vars = getUrlVars();
-    console.log(vars);
+    if(!vars)
+        return 1;
     let page = vars.page;
     return page;
 }
