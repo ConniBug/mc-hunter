@@ -3,6 +3,7 @@ const { autoToHTML } = require('@sfirew/minecraft-motd-parser');
 // Function to send a request to the API server
 const send_request = require("./requestHandler.js").send_request;
 const { getUrlVars, setUrlVars } = require("./urlHandler.js");
+const { setFilterValues } = require("./filterHandler.js");
 
 
 //     hostname       varchar(255)  null,
@@ -18,10 +19,13 @@ const { getUrlVars, setUrlVars } = require("./urlHandler.js");
 
 const table = document.querySelector("#table1-body");
 
-let { hostname, port, version, minPlayers, maxPlayers, sortBy, sortDirection } = getUrlVars();
-let { page } = getUrlVars();
+let { hostname, port, version, minPlayers, maxPlayers, sortBy, sortDirection, page } = getUrlVars();
+console.log(`Starting URL Vars: ${hostname}, ${port}, ${version}, ${minPlayers}, ${maxPlayers}, ${sortBy}, ${sortDirection}, ${page}`);
+setFilterValues({ hostname, port, version, minPlayers, maxPlayers, sortBy, sortOrder: sortDirection });
+
 setUrlVars();
 
+const resultCount = document.querySelector("#resultCount");
 function table_populate(entrys) {
     // Clear the table
     table.innerHTML = "";
@@ -55,13 +59,46 @@ function table_populate(entrys) {
             `;
         table.insertAdjacentHTML("beforeend", row);
     });
-}
-module.exports.table_populate = table_populate;
 
+    // Update result count
+    resultCount.innerHTML = `Found ${entrys.length} servers`;
+}
+
+let anim = null;
 function OnSearchUpdate(caller) {
+    resultCount.innerHTML = `Loading...`;
+    if(anim !== null)
+        clearInterval(anim);
+
+    let cnt = 0;
+    anim = setInterval(() => {
+        let tmp = "";
+        ++cnt;
+        if (cnt >= 4)
+            cnt = 0;
+        switch (cnt) {
+            case 0:
+                tmp = "-";
+                break;
+            case 1:
+                tmp = "\\";
+                break;
+            case 2:
+                tmp = "|";
+                break;
+            case 3:
+                tmp = "/";
+                break;
+        }
+        resultCount.innerHTML = `Loading ${tmp}`;
+    }, 250);
+
     setUrlVars();
     console.log(`Search update: ${caller}`);
-    send_request();
+    send_request(function (serverInfo) {
+        anim = clearInterval(anim);
+        table_populate(serverInfo);
+    });
 }
 
 const sByHostname = document.querySelector("#sByHostname");
@@ -162,31 +199,37 @@ const table1First = document.querySelector("#table1-first");
 {
     table1First.addEventListener("click", () => {
         page = 1;
+        setUrlVars(page);
         OnSearchUpdate("table1First");
     });
 }
 const table1Prev = document.querySelector("#table1-prev");
 {
     table1Prev.addEventListener("click", () => {
-        page = page - 1;
+        --page;
         if(page <= 0)
             page = 1;
+        setUrlVars(page);
         OnSearchUpdate("table1Prev");
     });
 }
 const table1Next = document.querySelector("#table1-next");
 {
     table1Next.addEventListener("click", () => {
-        page = page + 1;
+        ++page;
+        setUrlVars(page);
         OnSearchUpdate("table1Next");
     });
 }
 const table1Last = document.querySelector("#table1-last");
 {
     table1Last.addEventListener("click", () => {
-        // page = 1;
         // OnSearchUpdate("table1Last");
+        setUrlVars(page);
         console.error("Not implemented");
         return false;
     });
 }
+
+module.exports.table_populate = table_populate;
+OnSearchUpdate("init");
