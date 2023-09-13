@@ -1,0 +1,12 @@
+{
+  "starting_ip": "1.0.0.0",
+  "ending_ip": "255.255.255.255",
+  "reservedSubnets": ["10.", "172.", "192.", "127.", "0."],
+  "save_progress_interval": 10,
+  "status_update_interval": 10000,
+  "max_pending": 3000,
+  "discord": {
+    "webhook_url": "https://discord.com/api/webhooks/1151272469043367946/V0ckUrVI0Ilw_06gRFJYFwW5Oo-y8Zo1ZKJZDBbCcU3weeGY9a5TE25RLyCpghKC1UCY",
+    "username": "Minecraft Server Hunter"
+  }
+}

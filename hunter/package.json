@@ -1,0 +1,19 @@
+{
+  "name": "mc-server-hunter",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Conni Bilham <me@conni.lgbt>",
+  "license": "AGPL-3",
+  "description": "",
+  "dependencies": {
+    "@connibug/js-logging": "^2.0.1",
+    "@sfirew/minecraft-motd-parser": "^1.1.2-1",
+    "discord.js": "^14.13.0",
+    "dotenv": "^16.3.1",
+    "mariadb": "^3.2.0",
+    "minecraft-protocol": "^1.44.0"
+  }
+}
