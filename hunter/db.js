@@ -83,6 +83,15 @@ module.exports.get_ips = async (options = {}) => {
         }
         l.verbose(`${key}: ${value}`);
 
+        if(key === "alive") {
+            if(value === "true")
+                value = 1;
+            else if(value === "false")
+                value = 0;
+            else
+                value = 0;
+        }
+
         if(key === "min_players" || key === "max_players") {
             query += tmp + `players_online ${key === "min_players" ? ">=" : "<="} ?`;
             value = parseInt(value);
@@ -105,12 +114,14 @@ module.exports.get_ips = async (options = {}) => {
             options.sort_order = "desc";
             l.log(`Invalid options.sort_by: ${options.sort_by}`);
         }
-        values.push(options.sort_by);
-        values.push(options.sort_order === "asc" ? "ASC" : "DESC");
-        query += ' ORDER BY ? ?';
+        let t = options.sort_order === "asc" ? "ASC" : "DESC";
+        query += ` ORDER BY ${options.sort_by} ${t}`;
     }
     // query += ` LIMIT 50;`;
     query += ` LIMIT ${50 * (page - 1)}, 50;`;
+
+    console.log(query);
+    console.log(values);
 
     return new Promise(async (resolve, reject) => {
         while (!connected) {

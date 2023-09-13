@@ -17,6 +17,14 @@ let filterObjects = {
     }
 }
 
+function setFilterValues(filterValues) {
+    for (let [key, value] of Object.entries(filterValues)) {
+        if(!filterObjects[key])
+            continue;
+        filterObjects[key].value = value;
+    }
+}
+
 function getFilterValues() {
     let filterValues = {
         hostname: filterObjects.hostname.value,
@@ -35,3 +43,4 @@ function getFilterValues() {
 
 module.exports.filterObjects = filterObjects;
 module.exports.getFilterValues = getFilterValues;
+module.exports.setFilterValues = setFilterValues;
