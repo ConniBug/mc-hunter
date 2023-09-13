@@ -1,6 +1,9 @@
 const mariadb = require('mariadb');
 const l = require("@connibug/js-logging");
 
+let update_ip_connection = null;
+let get_ips_connection = null;
+
 // Connect to mariadb
 l.log(`Connecting to MariaDB at ${process.env.DB_HOST}:${process.env.DB_PORT} as ${process.env.DB_USER} with database ${process.env.DB_NAME}`);
 const pool = mariadb.createPool({
@@ -12,7 +15,9 @@ const pool = mariadb.createPool({
 
     database: process.env.DB_NAME,
 
-    connectionLimit: 10
+    connectionLimit: 5,
+
+    trace: true
 });
 
 function connect() {
@@ -28,6 +33,8 @@ function connect() {
 module.exports.shutdown = async () => {
     if(update_ip_connection !== null)
         update_ip_connection.end();
+    if(get_ips_connection !== null)
+        get_ips_connection.end();
 
     if(pool !== null)
         pool.end();
@@ -35,12 +42,10 @@ module.exports.shutdown = async () => {
     console.log("Closed database connections");
 }
 
-let update_ip_connection = null;
 module.exports.update_ip = async (hostname, port, players_online, players_max, alive, version, description, error) => {
-    return new Promise((resolve, reject) => {
-        if(!update_ip_connection) {
-            reject("No connection to server");
-            return;
+    return new Promise(async (resolve, reject) => {
+        while (!connected) {
+            await new Promise(resolve => setTimeout(resolve, 5000));
         }
         update_ip_connection.query(`INSERT INTO ips (hostname, port, players_online, players_max, alive, version, description, error) VALUES (?, ?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE port = ?, alive = ?, players_online = ?, players_max = ?, version = ?, description = ?, error = ?`, [hostname, port, players_online, players_max, alive, version, description, error, port, alive, players_online, players_max, version, description, error]).then((res) => {
             resolve(res);
@@ -107,21 +112,29 @@ module.exports.get_ips = async (options = {}) => {
     // query += ` LIMIT 50;`;
     query += ` LIMIT ${50 * (page - 1)}, 50;`;
 
-    return new Promise((resolve, reject) => {
-        if(!update_ip_connection)
-            throw("No connection to server");
-        update_ip_connection.query(query, values).then((res) => {
+    return new Promise(async (resolve, reject) => {
+        while (!connected) {
+            await new Promise(resolve => setTimeout(resolve, 5000));
+        }
+        get_ips_connection.query(query, values).then((res) => {
             resolve(res);
         });
     });
 };
 
+let connected = false;
 (async() => {
     l.log(`Connecting...`);
-    update_ip_connection = await connect();
-    if(update_ip_connection === null) {
+    update_ip_connection = connect();
+    get_ips_connection = connect();
+
+    if((await update_ip_connection) === null || (await get_ips_connection) === null) {
         l.error("Failed to connect to database");
         process.exit(1);
     }
+    update_ip_connection = await update_ip_connection;
+    get_ips_connection = await get_ips_connection;
+
+    connected = true;
     l.log("Connected to database");
 })();
