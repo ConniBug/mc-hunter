@@ -6,7 +6,7 @@
   "status_update_interval": 10000,
   "max_pending": 3000,
   "discord": {
-    "webhook_url": "https://discord.com/api/webhooks/1151272469043367946/V0ckUrVI0Ilw_06gRFJYFwW5Oo-y8Zo1ZKJZDBbCcU3weeGY9a5TE25RLyCpghKC1UCY",
+    "webhook_url": "",
     "username": "Minecraft Server Hunter"
   }
 }
